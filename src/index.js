@@ -1,24 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-//import StopWatch from './StopWatch';
 import * as serviceWorker from './serviceWorker';
 
 const view = (props) => {
-    //console.log(props);
-    //let clone = Object.assign({}, props);
   
-    let minutes = Math.floor(props.time/60);
+    let minutes = Math.floor(props.time/60); 
     let seconds = props.time - (minutes*60);
     let secondsFormatted = `${seconds < 10 ? "0" : ""}${seconds}`;
     let handler = (event) => {
-      //clone.model=clone.model.update(clone.model, clone.model.running?'STOP':'START');
       container.dispatch(props.running?'STOP':'START');
     };
   
     return(
       <div>
-        <p>{minutes}:{secondsFormatted}</p> 
+        <p>{minutes}:{secondsFormatted}</p>  
         <button onClick={handler}>{props.running?'Stop':'Start'}</button>
       </div>);
   }
@@ -50,40 +46,13 @@ const view = (props) => {
 
   let container = createStore(update);
   
-  let intents = {
-    TICK: 'TICK', 
-    START: 'START',
-    STOP: 'STOP', 
-    RESET: 'RESET'
-  };
-  
-  
- /* function App(model) {
-    //console.log(view(model));
-    return (
-      view(model)
-    );
-  }*/
-  
-  //export default App;
-
-
-/*let model={
-    running: false,
-    time: 0,
-    update: update
-  }*/
-
 function render(){
-    //ReactDOM.render(<StopWatch model={model}/>, document.getElementById('root'));
     ReactDOM.render(view(container.getState()), document.getElementById('root'));
 }
 
 container.subscribe(render);
 
 setInterval(() => {
-    //model=update(model,'TICK');
-    //render();
     container.dispatch('TICK');
 }, 1000);
 // If you want your app to work offline and load faster, you can change
