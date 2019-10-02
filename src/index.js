@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import * as Redux from 'redux'
 
 const view = (props) => {
   
@@ -9,7 +10,7 @@ const view = (props) => {
     let seconds = props.time - (minutes*60);
     let secondsFormatted = `${seconds < 10 ? "0" : ""}${seconds}`;
     let handler = (event) => {
-      container.dispatch(props.running?'STOP':'START');
+      container.dispatch(props.running?{type:'STOP'}:{type:'START'});
     };
   
     return(
@@ -18,33 +19,18 @@ const view = (props) => {
         <button onClick={handler}>{props.running?'Stop':'Start'}</button>
       </div>);
   }
-  
-  const createStore =(reducer) =>{
-    let internalState;
-    let handlers = [];
-    return {
-      dispatch: (intent) => {
-        internalState = reducer(internalState, intent);
-        handlers.forEach(h=>{h();});
-      },
-      subscribe: (handler) => {
-        handlers.push(handler);
-      },
-      getState: ()=>internalState
-    }
-  }
-  
 
-  const update = (model={running: false, time:0}, intent) => {
+  const update = (model={running: false, time:0}, action) => {
     const updates = {
         'TICK': (model) => Object.assign(model, {time:model.time + (model.running?1:0)}),
         'STOP': (model) => Object.assign(model, {running: false}),
         'START': (model)=> Object.assign(model, {running:true})
     };
-    return (updates[intent] || (() => model))(model);
+    return (updates[action.type] || (() => model))(model);
 }
 
-  let container = createStore(update);
+
+let container = Redux.createStore(update);
   
 function render(){
     ReactDOM.render(view(container.getState()), document.getElementById('root'));
@@ -53,7 +39,7 @@ function render(){
 container.subscribe(render);
 
 setInterval(() => {
-    container.dispatch('TICK');
+    container.dispatch({type:'TICK'});
 }, 1000);
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
